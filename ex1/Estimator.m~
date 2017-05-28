@@ -180,7 +180,7 @@ R = diag([var_c, var_g, var_d]);
 % Kalman gain
 
 % z[k] 
-z = [sense(2); sense(3); sense(1)];     % column vector (zc, zg, zd)'
+z = sense';     % should be column vector
 
 % remove invalid measurements 
 mask = ~isinf(z);

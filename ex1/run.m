@@ -114,6 +114,34 @@ trackErrorNorm = 0;
 if doplot
     % Add your plots here to debug the estimator and verify your
     % implementation.
+    
+    % 2d map (x, y)
+    figure(1)
+    plot(loc(:, 1), loc(:, 2), 'r.')
+    hold on 
+    plot(posEst(:, 1), posEst(:, 2), 'b.')
+    hold off
+    
+    % orientation (vs time)
+    figure(2)
+    plot(loc(:, 3))
+    hold on 
+    plot(oriEst)
+    hold off
+    
+    % gyro drift (vs time)
+    figure(3)
+    plot(drift)
+    hold on 
+    plot(driftEst)
+    hold off
+    
+    % posVar (vs time)
+    figure(4)
+    plot(posEst(:, 1), 'r--')
+    hold on 
+    plot(posEst(:, 2), 'b--')
+    hold off 
 end
     
 return;
