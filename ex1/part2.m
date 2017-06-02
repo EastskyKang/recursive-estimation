@@ -1,11 +1,11 @@
 % parameters
-N = 50;                     % the number of test
+N = 5;                     % the number of test
 edges = 0:0.1:3;            % bin edge for histogram
 Qv = [0.01, 0.1, 1];    
 
 debug = true;
 
-% rms
+%% RMS
 rms = zeros(N, 3);
 
 for j = 1:size(Qv, 2)
@@ -31,7 +31,7 @@ for j = 1:size(Qv, 2)
         end
         
         % TODO CHECK SEED
-        rms(i, 1) = run(simConst, estConst, false, 0);
+        rms(i, j) = run(simConst, estConst, false, 0);
         
         if debug
             toc;
@@ -39,8 +39,26 @@ for j = 1:size(Qv, 2)
     end
 end
 
-% histogram 
+%% RMS HISTOGRAM
+disp('===============================================================')
+
 for j = 1:size(Qv, 2)
     fig = histogram(rms(:, j), edges);
-    save(fig, ['hist', num2str(j), '.png'])
+    title(['RMS error histogram with Qv = ', num2str(Qv(j))])
+    xlabel('RMS error (Root Mean Squared Error)')
+    saveas(fig, ['hist', num2str(j), '.png'])
 end
+
+%% MEAN AND VARIANCE OF RMS mean and variance 
+disp('===============================================================')
+
+mean_rms = mean(rms);
+var_rms = var(rms);
+
+disp('mean = ')
+disp(mean_rms)
+save('mean_rms.txt', 'mean_rms', '-ascii', '-tabs', '-double')
+
+disp('var = ')
+disp(var_rms)
+save('var_rms.txt', 'var_rms', '-ascii', '-tabs', '-double')
