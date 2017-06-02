@@ -68,17 +68,16 @@ if (tm == 0)
     
     pbar = estConst.TranslationStartBound;
     rbar = estConst.RotationStartBound;
-    b0 = estConst.GyroDriftStartBound;      % exact value
+    bbar = estConst.GyroDriftStartBound;      
     
     % mean
     % xhat_m[0] = x0
-    xhat_m0 = (rand(3, 1) - 0.5) .* ([pbar; pbar; rbar] * 2);
-    xhat_m0 = [xhat_m0; b0];
+    xhat_m0 = [0, 0, 0, 0];
     
     % variance
     % Pm[0] = P0
-    Pm0 = eye(4);       % TODO CHECK
-    Pm0(4) = b0;         % exact value
+    Pm0 = eye(4);       % TODO CHECK 
+    Pm0(4) = 0;         % TODO make formula exact value
     
     % independent
     diag_Pm0 = diag(Pm0);

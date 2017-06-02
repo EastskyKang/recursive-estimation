@@ -45,7 +45,7 @@ function trackErrorNorm=run(simConst,estConst,doplot,seed)
 % [05.05.17, LH]    2017 version
 
 % clear command window, close figures
-% clc;
+clc;
 close all;
 
 if nargin==0
@@ -86,7 +86,15 @@ end
 N=simConst.N;
 
 % Initialize the estimator.  
-estState = [];
+% estState = [];
+estState = struct(...
+    'x', loc(1, 1), ...
+    'y', loc(1, 2), ...
+    'r', loc(1, 3), ...
+    'b', drift(1, 1), ...
+    'Pm', , ...
+    'tm', , ...
+    )
 posEst = zeros(N,2);
 oriEst = zeros(N,1);
 driftEst = zeros(N,1);
@@ -109,7 +117,7 @@ end
 
 % Calculate the total tracking error.
 % Replace the following:
-trackErrorNorm = sqrt(mean(sum((posEst - loc(:, 1:2)).^2, 2)));
+trackErrorNorm = 0;
 
 if doplot
     % Add your plots here to debug the estimator and verify your
@@ -135,6 +143,13 @@ if doplot
     hold on 
     plot(driftEst)
     hold off
+    
+    % posVar (vs time)
+    figure(4)
+    plot(posEst(:, 1), 'r--')
+    hold on 
+    plot(posEst(:, 2), 'b--')
+    hold off 
 end
     
 return;
