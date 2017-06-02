@@ -76,8 +76,9 @@ if (tm == 0)
     
     % variance
     % Pm[0] = P0
-    Pm0 = eye(4);       % TODO CHECK 
-    Pm0(4) = 0;         % TODO make formula exact value
+    % variance for uniform zero mean RV = 1/3 x_bar ^2 
+    vars = 1/3 * [pbar, pbar, rbar, bbar].^2;
+    Pm0 = diag(vars);
     
     % independent
     diag_Pm0 = diag(Pm0);
