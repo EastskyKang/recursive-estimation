@@ -179,6 +179,8 @@ R = diag([var_c, var_g, var_d]);
 % -------------------------------------------------------------------------
 % Kalman gain
 
+joseph_form = true;
+
 % z[k] 
 z = [sense(2); sense(3); sense(1)];     % column vector (zc, zg, zd)'
 
@@ -206,8 +208,14 @@ h_xhat_p = h_xhat_p(mask);
 xhat_m = xhat_p + K * (z - h_xhat_p);
 
 % variance
-% Pm[k] = (I - K[k] H[k]) Pp[k]
-Pm = (eye(4) - K * H) * Pp;
+
+if joseph_form
+    % Pm[k] = (I - K[k] H[k]) Pp[k] (I - K[k] H[k])' + K[k] M[k] R[k] M'[k] K'[k]
+    Pm = (eye(4) - K * H) * Pp * (eye(4) - K * H)' + K * M * R * M' * K';
+else
+    % Pm[k] = (I - K[k] H[k]) Pp[k]
+    Pm = (eye(4) - K * H) * Pp;
+end
 
 diag_Pm = diag(Pm);
 
