@@ -87,7 +87,7 @@ if (init)
     x0 = [ones(1, N) * KC.L * 2; zeros(1, N)];
     y0 = start_point * KC.L;
     
-    % start orientation
+    % start orientation     TODO 
     h0 = rand(2, N) * (pi()/2); 
     
     % A : [pi/2, pi] (S1) / [-pi, -pi/2] (S2)
@@ -226,32 +226,12 @@ end
 
 % -------------------------------------------------------------------------
 % roughening
-
-% TODO roughening particle goes out the wall 
-
-K = 0.1;        % tuning parameter
-d = 6;          % dimension of state space      % TODO CHECK
-
-% inter-sample variability
-Ex_A = max(x_m(1,:)) - min(x_m(1,:));
-Ex_B = max(x_m(2,:)) - min(x_m(2,:));
-Ey_A = max(y_m(1,:)) - min(y_m(1,:));
-Ey_B = max(y_m(2,:)) - min(y_m(2,:));
-Eh_A = max(h_m(1,:)) - min(h_m(1,:));
-Eh_B = max(h_m(2,:)) - min(h_m(2,:));
-
-sig_x = K * [Ex_A; Ex_B] * (N ^ (-1/d));
-sig_y = K * [Ey_A; Ey_B] * (N ^ (-1/d));
-sig_h = K * [Eh_A; Eh_B] * (N ^ (-1/d));
-
-delta_x = (rand(2, N) - 0.5) * 2 .* sig_x;
-delta_y = (rand(2, N) - 0.5) * 2 .* sig_y;
-delta_h = (rand(2, N) - 0.5) * 2 .* sig_h;
+[x_m, y_m, h_m] = Roughening(x_m, y_m, h_m, N);
 
 % Replace the following:
-postParticles.x = x_m + delta_x;
-postParticles.y = y_m + delta_y;
-postParticles.h = h_m + delta_h;
+postParticles.x = x_m;
+postParticles.y = y_m;
+postParticles.h = h_m;
 
 end % end estimator
 
@@ -408,4 +388,55 @@ function [p] = fw(w)
     mask = (w < -KC.wbar);
     p(mask) = 0;
     
+end
+
+function [x_m, y_m, h_m] = Roughening(x_m, y_m, h_m, N)
+        
+    K = 0.05;        % tuning parameter
+    d = 6;          % dimension of state space      % TODO CHECK
+    
+    % inter-sample variability
+    Ex_A = max(x_m(1,:)) - min(x_m(1,:));
+    Ex_B = max(x_m(2,:)) - min(x_m(2,:));
+    Ey_A = max(y_m(1,:)) - min(y_m(1,:));
+    Ey_B = max(y_m(2,:)) - min(y_m(2,:));
+    Eh_A = max(h_m(1,:)) - min(h_m(1,:));
+    Eh_B = max(h_m(2,:)) - min(h_m(2,:));
+    
+    sig_x = K * [Ex_A; Ex_B] * (N ^ (-1/d));
+    sig_y = K * [Ey_A; Ey_B] * (N ^ (-1/d));
+    sig_h = K * [Eh_A; Eh_B] * (N ^ (-1/d));
+    
+    % sampling mask for particles
+    % if mask is true then resample
+    mask_x = true(size(x_m));
+    mask_y = true(size(y_m));
+    
+    % delta
+    delta_x = zeros(size(x_m));
+    delta_y = zeros(size(y_m));
+    delta_h = normrnd(zeros(size(h_m)), sig_h .* ones(size(h_m)));
+    
+    while ~((nnz(mask_x) == 0) && (nnz(mask_y) == 0))
+        % until valid... (particles never goes over the walls)
+        
+        % sample from normal distribution
+        delta_x = normrnd(zeros(size(x_m)), sig_x .* ones(size(x_m))) .* mask_x ...
+            + delta_x .* (~mask_x);
+        delta_y = normrnd(zeros(size(y_m)), sig_y .* ones(size(y_m))) .* mask_y ...
+            + delta_y .* (~mask_y);
+       
+        % update mask 
+        mask_x = ~((0 <= (x_m + delta_x)) & ((x_m + delta_x) <= (KC.L * 2)));
+        mask_y = ~((0 <= (y_m + delta_y)) & ((y_m + delta_y) <= (KC.L * 1)));
+        
+    end
+    
+    x_m = x_m + delta_x;
+    y_m = y_m + delta_y;
+    h_m = h_m + delta_h;
+end
+
+function samples = UniformDistributionSampling(size, lower_bound, upper_bound)
+    samples = rand(size) .* (upper_bound - lower_bound) + lower_bound;
 end
