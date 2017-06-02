@@ -1,5 +1,5 @@
 % parameters
-N = 1;                     % the number of test
+N = 50;                     % the number of test
 edges = 0:0.1:3;            % bin edge for histogram
 Qv = [0.01, 0.1, 1];    
 
@@ -42,13 +42,14 @@ end
 
 %% RMS HISTOGRAM
 disp('===============================================================')
+disp('draw and save histogram')
 
 for j = 1:size(Qv, 2)
     figure(j)
     fig = histogram(rms(:, j), edges);
     
     title(['RMS error histogram with Qv = ', num2str(Qv(j))])
-    xlabel('RMS error (Root Mean Squared Error)')
+    xlabel('RMS error (Root Mean Squared Error) (m)')
     
     if save_out
         saveas(fig, ['hist', num2str(j), '.png'])
@@ -57,6 +58,7 @@ end
 
 %% MEAN AND VARIANCE OF RMS mean and variance 
 disp('===============================================================')
+disp('calculating mean and variance of RMS')
 
 mean_rms = mean(rms);
 var_rms = var(rms);
