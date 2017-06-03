@@ -72,7 +72,7 @@ end
 
 %% Mode 1: Initialization
 % Set number of particles:
-N = 1000; % obviously, you will need more particles than 10.
+N = 500; % obviously, you will need more particles than 10.
 if (init)
     % Do the initialization of your estimator here!
     % These particles are the posterior particles at discrete time k = 0
@@ -87,7 +87,7 @@ if (init)
     x0 = [ones(1, N) * KC.L * 2; zeros(1, N)];
     y0 = start_point * KC.L;
     
-    % start orientation     TODO 
+    % start orientation      
     h0 = rand(2, N) * (pi()/2); 
     
     % A : [pi/2, pi] (S1) / [-pi, -pi/2] (S2)
@@ -178,19 +178,11 @@ beta = fw(z - d_wrong) * KC.sbar ...
 beta = prod(beta, 1);                           % (1 x N)
 
 if sum(beta) == 0
-    % TODO exception case (divide by 0)
-    
-    disp('beta is all zero! exception!')
-    
-    x_m = x_p;
-    y_m = y_p;
-    h_m = h_p;
-    
-    postParticles.x = x_m;
-    postParticles.y = y_m;
-    postParticles.h = h_m;
-    
-    return
+    % sum of beta is zero (beta is all zero)
+    % measurement model cannot deal with large value of measurement error
+   
+    warning('beta is all zero!')
+    beta = ones(1, N) * 1 / N;                  % TODO is there better way?
 end
 
 % normalize beta
@@ -392,8 +384,8 @@ end
 
 function [x_m, y_m, h_m] = Roughening(x_m, y_m, h_m, N)
         
-    K = 0.05;        % tuning parameter
-    d = 6;          % dimension of state space      % TODO CHECK
+    K = 0.04;        % tuning parameter
+    d = 6;          % dimension of state space
     
     % inter-sample variability
     Ex_A = max(x_m(1,:)) - min(x_m(1,:));
