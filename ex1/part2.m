@@ -31,7 +31,6 @@ for j = 1:size(Qv, 2)
             tic
         end
         
-        % TODO CHECK SEED
         rms(i, j) = run(simConst, estConst, false, 0);
         
         if debug

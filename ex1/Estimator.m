@@ -118,7 +118,7 @@ end
 
 % tspan
 tm_prev = estState.tm;          % (k-1)T
-tspan = [tm_prev, tm];          % TODO CHECK
+tspan = [tm_prev, tm];          
 
 % initial cond
 % xhat_m[k-1]
@@ -139,14 +139,15 @@ xhat_p = xhat(end, :)';
 % initial cond: P((k-1)T) = Pm(k-1)
 
 % tspan
-tm_prev = estState.tm;
-tspan = [tm_prev, tm];          % TODO CHECK
+tm_prev = estState.tm;         % (k-1)T
+tspan = [tm_prev, tm];          
 
 % initial cond
 % Pm[k-1]
 Pm_prev = estState.Pm;
 
 % ode
+% NOTE: put xhat look-up table to PmatODE and interpolate to get xhat(t) 
 [~, p] = ode45(...
     @(t, p) PmatODE(t, p, actuate, xhat, t_xhat, estConst), ...
     tspan, Pm_prev(:));

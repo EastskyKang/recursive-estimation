@@ -116,25 +116,43 @@ if doplot
     % implementation.
     
     % 2d map (x, y)
-    figure(1)
+    figure('Name', 'trajectory')
     plot(loc(:, 1), loc(:, 2), 'r.')
     hold on 
     plot(posEst(:, 1), posEst(:, 2), 'b.')
+    plot(loc(1, 1), loc(1, 2), 'kX')
     hold off
+    title('Y-X')
+    legend('real', 'est', 'start pt')
     
     % orientation (vs time)
-    figure(2)
+    figure('Name', 'orientation')
     plot(loc(:, 3))
     hold on 
     plot(oriEst)
     hold off
+    title('Orientation')
+    legend('real', 'est')
     
     % gyro drift (vs time)
-    figure(3)
+    figure('Name', 'gyro')
     plot(drift)
     hold on 
     plot(driftEst)
     hold off
+    title('Gyro drift')
+    legend('real', 'est')
+    
+    % variances
+    figure('Name', 'variances')
+    plot(posVar(:, 1))
+    hold on 
+    plot(posVar(:, 2))
+    plot(oriVar)
+    plot(driftVar)
+    hold off 
+    title('Variance')
+    legend('x', 'y', 'ori', 'drift')
 end
     
 return;
