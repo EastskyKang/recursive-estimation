@@ -21,7 +21,7 @@ for j = 1:size(Qv_est, 2)
     
     if debug
         disp('===============================================================')
-        disp(['Qv = ', num2str(Qv_est(j))])
+        disp(['Qv = ', num2str(Qv_est(j)), ' / ', num2str(Qv_est(j))])
     end
     
     % const
