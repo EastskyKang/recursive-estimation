@@ -95,39 +95,41 @@ oriVar = zeros(N,1);
 driftVar = zeros(N,1);
 [posEst(1,:),oriEst(1),driftEst(1),posVar(1,:),oriVar(1),driftVar(1),estState] = ...
     Estimator(estState,zeros(1,2),zeros(1,3),0,estConst);
-
 % Call the estimator for each time step.
 for n = 2:N
     [posEst(n,:),oriEst(n),driftEst(n),posVar(n,:),oriVar(n),driftVar(n),estState] = ...
         Estimator(estState,input(n,:),sense(n,:),tm(n),estConst);
 end
 
-
-
 %% The results
 % Plots of the results.
 
 % Calculate the total tracking error.
 % Replace the following:
-trackErrorNorm = 0;
+trackErrorNorm = sqrt((1/N)*sum(sum((posEst-loc(:, 1:2)).^2)));
 
 if doplot
-    figure(1) % position estimate
-    plot(posEst(:, 1), posEst(:,2), 'b');
-    title('Position Estimate');
+    figure('Name', 'Position Estimate') % position estimate
+    plot(posEst(:, 1), posEst(:,2), 'b.');
     hold on;
-    plot(loc(:,1),loc(:,2),'r');
-    figure(2) % position estimate
-    plot(oriEst);
-    title('Orientation Estimate');
-    figure(3) % position estimate
+    plot(loc(:,1),loc(:,2),'r.');
+    legend('Pos Estimate', 'Pos True');
+    
+    figure('Name', 'Orientation Estimate') % position estimate
     plot(oriEst);
     hold on;
-    plot(loc(:,3)),'r');
-    title('Orientation Estimate');
-
+    plot(loc(:,3),'r');
+    legend('Ori Estimate', 'Ori True');
+    
+    figure('Name', 'Drift Estimate');
+    plot(drift,'r');
+    plot(driftEst, 'b');
+    legend('Dritf Estimate', 'Drift True');
+    
+    figure('Name', 'Variance');
+    plot(posVar,'r');
+    plot(driftVar, 'b');
 end
     
 return;
 
-    
