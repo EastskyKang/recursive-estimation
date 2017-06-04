@@ -1,7 +1,9 @@
 % parameters
 N = 50;                     % the number of test
 edges = 0:0.1:3;            % bin edge for histogram
-Qv = [0.01, 0.1, 1];    
+
+Qv_sim = [0.01, 0.1, 1];
+Qv_est = [0.01, 0.1, 1];    
 
 debug = true;
 save_out = true;
@@ -9,11 +11,11 @@ save_out = true;
 %% RMS
 rms = zeros(N, 3);
 
-for j = 1:size(Qv, 2)
+for j = 1:size(Qv_est, 2)
     
     if debug
         disp('===============================================================')
-        disp(['Qv = ', num2str(Qv(j))])
+        disp(['Qv = ', num2str(Qv_est(j))])
     end
     
     % const
@@ -23,7 +25,8 @@ for j = 1:size(Qv, 2)
     estConst = EstimatorConstants();
 
     % change Qv
-    estConst.VelocityInputPSD = Qv(j);
+    estConst.VelocityInputPSD = Qv_sim(j);
+    estConst.VelocityInputPSD = Qv_est(j);
     
     for i = 1:N
         if debug
@@ -43,11 +46,11 @@ end
 disp('===============================================================')
 disp('draw and save histogram')
 
-for j = 1:size(Qv, 2)
+for j = 1:size(Qv_est, 2)
     figure(j)
     fig = histogram(rms(:, j), edges);
     
-    title(['RMS error histogram with Qv = ', num2str(Qv(j))])
+    title(['RMS error histogram with Qv = ', num2str(Qv_est(j))])
     xlabel('RMS error (Root Mean Squared Error) (m)')
     
     if save_out

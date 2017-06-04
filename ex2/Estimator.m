@@ -413,10 +413,8 @@ function [x_m, y_m, h_m] = Roughening(x_m, y_m, h_m, N)
         % until valid... (particles never goes over the walls)
         
         % sample from normal distribution
-        delta_x = normrnd(zeros(size(x_m)), sig_x .* ones(size(x_m))) .* mask_x ...
-            + delta_x .* (~mask_x);
-        delta_y = normrnd(zeros(size(y_m)), sig_y .* ones(size(y_m))) .* mask_y ...
-            + delta_y .* (~mask_y);
+        delta_x = randn(size(x_m)) .* sig_x .* mask_x + delta_x .* (~mask_x);
+        delta_y = randn(size(y_m)) .* sig_y .* mask_y + delta_y .* (~mask_y);
        
         % update mask 
         mask_x = ~((0 <= (x_m + delta_x)) & ((x_m + delta_x) <= (KC.L * 2)));
@@ -427,8 +425,4 @@ function [x_m, y_m, h_m] = Roughening(x_m, y_m, h_m, N)
     x_m = x_m + delta_x;
     y_m = y_m + delta_y;
     h_m = h_m + delta_h;
-end
-
-function samples = UniformDistributionSampling(size, lower_bound, upper_bound)
-    samples = rand(size) .* (upper_bound - lower_bound) + lower_bound;
 end
