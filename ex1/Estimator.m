@@ -64,15 +64,15 @@ function [posEst,oriEst,driftEst, posVar,oriVar,driftVar,estState] = Estimator(e
 
 %% Mode 1: Initialization
 if (tm == 0)
-    % Do the initialization of your estimator here!
     
-    % Replace the following:
     posEst = [0,0];
     oriEst = 0;
     driftEst = 0;
-    posVar = [0 0];
-    oriVar = 0;
-    driftVar = 0;
+    posVar = 0.33*estConst.TranslationStartBound^2*ones(1,2);
+    oriVar = 0.33*estConst.RotationStartBound;
+    driftVar = 0.33*estConst.GyroDriftStartBound;
+    
+    estState = updateEstState(estState, tm, posEst, oriEst, driftEst, posVar, oriVar, driftVar);
 
     return;
 end
@@ -83,12 +83,110 @@ end
 % initializing.  Run the estimator.
 
 
-% Replace the following:
-posEst = [0 0];
-oriEst = 0;
-driftEst = 0;
-posVar = [0 0];
-oriVar = 0;
-driftVar = 0;
+
+%Prior update
+[xp_k, Pp_k] = priorUpdate(estState,actuate,sense,tm,estConst);
+
+[xm, Pm] = measUpdate(estState,actuate,sense,tm,estConst, xp_k, Pp_k);
+
+posEst = xm(1:2);
+oriEst = xm(3);
+driftEst = xm(4);
+posVar = [Pm(1,1), Pm(2,2)];
+oriVar = Pm(3,3);
+driftVar = Pm(4,4);
+estState = updateEstState(estState, tm, posEst, oriEst, driftEst, posVar, oriVar, driftVar);
+
+end
+
+function [xm, Pm] = measUpdate(estState,actuate,sense,tm,estConst, xp, Pp)
+
+%Measurement update
+z = [sense(2), sense(3), sense(1)]; %Measurement [zc, zg, zd]
+H = [0, 0, 1, 0;
+    0, 0, 1, 1;
+    xp(1)/sqrt(xp(1)^2+xp(2)^2), xp(2)/sqrt(xp(1)^2+xp(2)^2), 0, 0];
+
+M = eye(3);
+
+R = diag([estConst.CompassNoise, estConst.GyroNoise, estConst.DistNoise]);
+
+K = Pp*H'/(H*Pp*H'+M*R*M');
+hk = H*xp';
+err = K(:, z<inf)*(z(z<inf)'-hk(z<inf));
+
+if isempty(err)
+    xm = xp; % If there are no measurements
+else
+    xm = xp + err; % update for only measured variable
+    
+end
+Pm = (eye(4)-K(:, z<inf)*H(z<inf, :))*Pp;
+
+end
+
+function [xk, Pk] = priorUpdate(estState,actuate,sense,tm,estConst)
+
+tspan = [estState.tm, tm];
+
+x0 = [estState.posEst, estState.oriEst, estState.driftEst]';
+[~,x] = ode45(@(t,x) q(x, estState, actuate, sense, tm, estConst), tspan, x0);
+
+xk = x(end, :);
+
+[~,P] = ode45(@(t,P) Pdot(P, estState,actuate, sense , tm, estConst), tspan, estState.Pm);
+
+Pk = reshape(P(end, :), [4,4]);
+
+end
+
+function x_dot = q(x, estState,actuate, sense , tm, estConst)
+% State update
+sv = estConst.WheelRadius*actuate(1);
+st = sv*cos(actuate(1));
+sr = -sv*sin(actuate(1))/estConst.WheelBase;
+
+x_dot = [st*cos(x(3)); st*sin(x(3)); sr; 0];
+
+end
+
+function P_dot = Pdot(P, estState,actuate, sense , tm, estConst)
+% State update
+xk_1 = [estState.posEst, estState.oriEst, estState.driftEst];
+
+sv = estConst.WheelRadius*actuate(1);
+st = sv*cos(actuate(1));
+
+% Variance update
+A = [0, 0, -st*sin(xk_1(1)), 0;
+    0, 0, st*cos(xk_1(2)), 0;
+    0, 0, 0, 0;
+    0, 0, 0, 0];
+
+L = [st*cos(xk_1(1)), 0;
+    st*sin(xk_1(2)), 0;
+    -sv*sin(actuate(1))/estConst.WheelBase, 0;
+    0, 1];
+
+Qc = estConst.VelocityInputPSD;
+Qb = estConst.GyroDriftPSD;
+Q = diag([Qc, Qb]);
+
+P = reshape(P, 4, 4);
+P_dot = A*P + P*A'+L*Q*L';
+P_dot = P_dot(:);
+
+end
+
+function  [estState] = updateEstState(estState, tm, posEst, oriEst, driftEst, posVar, oriVar, driftVar)
+
+    estState.tm = tm;
+    estState.posEst = posEst;
+    estState.oriEst = oriEst;
+    estState.driftEst = driftEst;
+    estState.posVar = posVar;
+    estState.oriVar = oriVar;
+    estState.driftVar = driftVar;
+    estState.Pm = diag([posVar, oriVar, driftVar]);
 
 end
