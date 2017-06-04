@@ -119,12 +119,13 @@ if doplot
     plot(loc(:,1),loc(:,2),'r');
     figure(2) % position estimate
     plot(oriEst);
-    hold on;
-    plot(loc(:,3),'r');
     title('Orientation Estimate');
-    figure(4);
-    plot(drift,'r');
-    
+    figure(3) % position estimate
+    plot(oriEst);
+    hold on;
+    plot(loc(:,3)),'r');
+    title('Orientation Estimate');
+
 end
     
 return;

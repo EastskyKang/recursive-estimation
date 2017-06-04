@@ -148,8 +148,8 @@ end
 function x_dot = q(x, estState,actuate, sense , tm, estConst)
 % State update
 sv = estConst.WheelRadius*actuate(1);
-st = sv*cos(actuate(2));
-sr = -sv*sin(actuate(2))/estConst.WheelBase;
+st = sv*cos(actuate(1));
+sr = -sv*sin(actuate(1))/estConst.WheelBase;
 
 x_dot = [st*cos(x(3)); st*sin(x(3)); sr; 0];
 
