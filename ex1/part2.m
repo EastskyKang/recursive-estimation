@@ -25,7 +25,7 @@ for j = 1:size(Qv_est, 2)
     estConst = EstimatorConstants();
 
     % change Qv
-    estConst.VelocityInputPSD = Qv_sim(j);
+    simConst.VelocityInputPSD = Qv_sim(j);
     estConst.VelocityInputPSD = Qv_est(j);
     
     for i = 1:N
