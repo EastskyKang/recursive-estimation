@@ -18,7 +18,10 @@
 %	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
 %----------------------------------------------------------------------------------------
 
-\documentclass[paper=a4, margin=15mm, fontsize=11pt]{scrartcl} % A4 paper and 11pt font size
+\documentclass[paper=a4, fontsize=11pt]{scrartcl} % A4 paper and 11pt font size
+\usepackage[margin=1.0cm
+%  ,showframe% <- only to show the page layout
+]{geometry}
 
 \usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
 \usepackage{fourier} % Use the Adobe Utopia font for the document - comment this line to return to the LaTeX default
@@ -64,7 +67,7 @@
 \fancyfoot[R]{\thepage} % Page numbering for right footer
 \renewcommand{\headrulewidth}{0pt} % Remove header underlines
 \renewcommand{\footrulewidth}{0pt} % Remove footer underlines
-\setlength{\headheight}{13.6pt} % Customize the height of the header
+\setlength{\headheight}{5pt} % Customize the height of the header
 
 \numberwithin{equation}{section} % Number equations within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
 \numberwithin{figure}{section} % Number figures within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
@@ -94,7 +97,6 @@
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{definition}{Definition}
-
 %----------------------------------------------------------------------------------------
 %	TITLE SECTION
 %----------------------------------------------------------------------------------------
@@ -123,59 +125,63 @@
 
 \graphicspath{{figures/}} 
 
-\begin{itemize}
-	\item $Q_{v1} = 0.01 \text{(rad/s)}^2/\text{Hz}$
+\section*{Note}
 
+\begin{center}
+Code for exercise was tested in MATLAB R2016b version: \\
+\vspace{3mm}
+MathWorks, MATLAB R2016b (9.1.0.441655) \\
+64-bit (maci64) 
+\end{center}
+
+\vspace{5mm}
+
+\section*{Histogram}
+
+\vspace{-5mm}
 \begin{figure}[H]
-\centering
-\noindent\makebox[\textwidth]{
-  \includegraphics[width=0.9\textwidth]{hist1.png}
-}
-\end{figure}
-	
-	\item $Q_{v2} = 0.1 \text{(rad/s)}^2/\text{Hz}$
-
-\begin{figure}[H]
-\centering
-\noindent\makebox[\textwidth]{
-  \includegraphics[width=0.9\textwidth]{hist2.png}
-}
-\end{figure}
-	
-	\item $Q_{v3} = 1.0 \text{(rad/s)}^2/\text{Hz}$
-
-\begin{figure}[H]
-\centering
-\noindent\makebox[\textwidth]{
-  \includegraphics[width=0.9\textwidth]{hist3.png}
-}
-\end{figure}
-
-\end{itemize}
-
-
-\begin{figure}[H]
-	\caption{batman.jpg \label{fig:batman}}
+	\caption*{Histogram of the RMS(root-mean squared) tracking error of 50 runs}
+	\vspace{3mm}
 	\centering
 	\begin{subfigure}[b]{0.3\textwidth}
 		\noindent\makebox[\textwidth]{
 		  \includegraphics[width=\textwidth]{hist1.png}
 		}
-	\caption{batman.jpg \label{fig:vaorig}}
+	\caption{$Q_v = 0.01$ (rad/s)$^2$/Hz}
 	\end{subfigure}
 	\begin{subfigure}[b]{0.3\textwidth}
 		\noindent\makebox[\textwidth]{
 		  \includegraphics[width=\textwidth]{hist2.png}
 		}
-	\caption{Scribbles for the color histogram \label{fig:vadenoised}}
+	\caption{$Q_v = 0.1$ (rad/s)$^2$/Hz}
 	\end{subfigure}
 	\begin{subfigure}[b]{0.3\textwidth}
 		\noindent\makebox[\textwidth]{
 		  \includegraphics[width=\textwidth]{hist3.png}
 		}
-	\caption{Scribbles for the color histogram \label{fig:vadenoised}}
+	\caption{$Q_v = 1.0$ (rad/s)$^2$/Hz}
 	\end{subfigure}
-\end{figure}
+\end{figure} 
+
+\vspace{10mm}
+
+\section*{Mean and Variance}
+
+\vspace{-5mm}
+\begin{table}[H]
+\caption*{Mean and Variance of RMS tracking error}
+\vspace{3mm}
+\centering
+\begin{tabular}{| c | c | c | c | }
+\hline
+			& $Q_v = 0.01$ 	& $Q_v = 0.1$ 	& $Q_v = 1.0$ 	\\
+\hline 
+Mean		& 1.025	  	 	& 0.668 		& 0.759			\\
+\hline							
+Variance	& 0.216			& 0.125 		& 0.225			\\	
+\hline							
+\end{tabular}
+\end{table}
 
 
 \end{document}
