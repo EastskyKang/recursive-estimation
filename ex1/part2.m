@@ -64,8 +64,8 @@ end
 disp('===============================================================')
 disp('calculating mean and variance of RMS')
 
-mean_rms = mean(rms);
-var_rms = var(rms);
+mean_rms = mean(rms, 1);
+var_rms = var(rms, 0, 1);
 
 disp('mean = ')
 disp(mean_rms)
