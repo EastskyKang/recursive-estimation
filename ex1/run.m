@@ -45,7 +45,7 @@ function trackErrorNorm=run(simConst,estConst,doplot,seed)
 % [05.05.17, LH]    2017 version
 
 % clear command window, close figures
-% clc;
+clc;
 close all;
 
 if nargin==0
