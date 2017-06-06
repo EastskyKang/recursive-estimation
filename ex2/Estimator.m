@@ -182,7 +182,7 @@ if sum(beta) == 0
     % measurement model cannot deal with large value of measurement error
    
     warning('beta is all zero!')
-    beta = ones(1, N) * 1 / N;                  % TODO is there better way?
+    beta = ones(1, N);                  % TODO is there better way?
 end
 
 % normalize beta
@@ -312,7 +312,7 @@ function [x, y, h] = q(x, y, h, v, u)
         % generate random numbers 
         % f(v) = cv^2 for [-v_bar, v_bar]
         % c is constant
-        c = 3 / (2 * KC.vbar)^3;
+        c = 3 / (2 * (KC.vbar)^3);
         
         % by F(v) = c/3 v^3 + c/3 v_bar^3
         % u is random number [0, 1]
