@@ -24,7 +24,7 @@ function [postParticles] = Estimator(prevPostParticles, sens, act, init)
 %   sens                Sensor measurements at discrete time k (t = k*Ts),
 %                       [4x1]-array, an Inf entry indicates no measurement
 %                       of the corresponding sensor.
-%                       sens(1): distance reported by sensor 1 (metres)
+%                       sens(1): distance reported by sensor 1 (metres)hel
 %                       sens(2): distance reported by sensor 2 (metres)
 %                       sens(3): distance reported by sensor 3 (metres)
 %                       sens(4): distance reported by sensor 4 (metres)
@@ -126,7 +126,8 @@ w = random(pd_w, [4, N]);
 beta = fz_xp(xp, yp, hp, sens);
 
 if sum(beta) == 0
-    error('The world has ended');
+    warning('all beta values are zero');
+    beta = ones(size(beta))/sum(ones(size(beta)));
 else
     beta = beta/sum(beta); %normalize beta
 end
@@ -219,7 +220,7 @@ hk_1 = hm;
 
 %v = makedist('Beta', 'a', 2, 'b', 1);
 %KC.vbar
-
+iter = 1;
 while(true)
 % There was a bounce between the timestep
 
@@ -236,9 +237,13 @@ hm(mask2) = pi() - hm(mask2);
 if sum(mask1 + mask2) == 0
     break;
 end
-
+if iter > 100
+    warning('maximum iteration exceeded in bounce dynamics');
+    break;
+iter = iter+1;
 end
 
+end
 end
 
 function [xm_p, ym_p, hm_p] = roughening(xm, ym, hm)
@@ -269,7 +274,7 @@ xm_p = xm + delta_x;
 ym_p = ym + delta_y;
 hm_p = hm + delta_h;
 
-
+iter = 1;
 while(true) % Check if roughening results in pushing the robot out of space
     mask_x = xm_p(1, :) > 2* KC.L | xm_p(1, :) < 0 | xm_p(2, :) > 2* KC.L | xm_p(2, :) < 0;
     mask_y = ym_p(1, :) > KC.L | ym_p(1, :) < 0 | ym_p(2, :) > KC.L | ym_p(2, :) < 0;
@@ -281,6 +286,12 @@ while(true) % Check if roughening results in pushing the robot out of space
         xm_p(:, mask_x) = xm(:, mask_x) + sigma_x .* randn(2, sum(mask_x));
         ym_p(:, mask_x) = ym(:, mask_x) + sigma_y .* randn(2, sum(mask_x));
     end
+    
+    if iter > 100
+        warning('maximum iterations passed in roughening');
+        break;
+    end
+    iter = iter+1;
     
 end
 
