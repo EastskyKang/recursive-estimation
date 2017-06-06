@@ -1,0 +1,7 @@
+## Estimator Design Part 2
+
+A root-mean squared tracking error was defined to compare the performance of the estimator depending on the noise variance Q_v.
+
+It can be seen in Hist.pdf, the variance of the RMS tracking error is smallest when Qv=0.1. As the process noise in the model is 0.1, this shows that the tracking error is smallest when the process noise considered is the most accurate to the model. This is counter intuitive as considering a more conservative process noise does not result in a more accurate estimation.
+
+This can be explained by how we are calculating the mean and variance in the hybrid Extended Kalman Filter. The estimated state and variance is calculated so that it is maximizing the posteriori likelihood. As the random variables are gaussian random variables, it can be seen as a problem minmizing a quadratic cost. However, if we consider a Q_v which is not a mismatch with the model, the estimated value is not optimal. Thus, considering a inaccurate process noise from the model results in a less accurate estimation. 
