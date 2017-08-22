@@ -384,7 +384,7 @@ end
 
 function [x_m, y_m, h_m] = Roughening(x_m, y_m, h_m, N)
         
-    K = 0.04;        % tuning parameter
+    K = 0.1;        % tuning parameter
     d = 6;          % dimension of state space
     
     % inter-sample variability
